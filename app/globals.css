@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Las familias reales las inyecta next/font (variables --font-anton, etc. en <html>) */
+:root {
+  --font-display: var(--font-anton), "Impact", sans-serif;
+  --font-serif: var(--font-instrument), Georgia, serif;
+  --font-sans: var(--font-inter-tight), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --ink: #0a0a0a;
+  --bone: #f4f1ea;
+}
+
+html {
+  background: var(--ink);
+  color: var(--bone);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+/* El cursor propio solo existe con ratón y en escritorio (ver Cursor.tsx) */
+@media (pointer: fine) and (min-width: 768px) {
+  body { cursor: none; }
+}
+
+::selection { background: var(--bone); color: var(--ink); }
+
+.font-serif-i { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
+
+/* Lenis: el navegador no debe suavizar por su cuenta mientras Lenis controla el scroll */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Grano de película sobre todo el sitio — estático: se pinta una vez y
+   queda en su propia capa, sin repintar en cada frame */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  transform: translateZ(0);
+}
+
+/* ---------- Entrada del sitio (titular ALEX / RECORDS, textos y nav) ----------
+   En CSS puro: arranca en el primer pintado sin esperar a que cargue el JavaScript,
+   y corre en el compositor, así que no se traba mientras se prepara la escena 3D. */
+.intro-line {
+  transform: translateY(110%);
+  animation: intro-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform;
+}
+.intro-fade {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: intro-fade 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+.intro-nav {
+  opacity: 0;
+  transform: translateY(-80px);
+  animation: intro-fade 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.2s forwards;
+}
+@keyframes intro-rise { to { transform: translateY(0); } }
+@keyframes intro-fade { to { opacity: 1; transform: translateY(0); } }
+
+/* La escena 3D aparece con un fundido en lugar de saltar */
+.scene-in { animation: scene-in 0.9s ease-out both; }
+@keyframes scene-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Fondo texturizado: patrón geométrico inspirado en tejidos de África occidental */
+.textile {
+  background-color: var(--ink);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(244,241,234,0.035) 0 2px, transparent 2px 22px),
+    repeating-linear-gradient(-45deg, rgba(244,241,234,0.035) 0 2px, transparent 2px 22px),
+    radial-gradient(ellipse at 50% 0%, rgba(244,241,234,0.08), transparent 60%);
+}
+.textile-light {
+  background-color: var(--bone);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(10,10,10,0.05) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(0deg, rgba(10,10,10,0.05) 0 1px, transparent 1px 48px);
+}
+
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--bone);
+}
+.outline-text-dark {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ink);
+}
+
+/* Disco CSS para las vitrinas: surcos + reflejo cónico */
+.vinyl {
+  border-radius: 9999px;
+  background:
+    conic-gradient(from 210deg, transparent 0 8%, rgba(255,255,255,0.22) 12%, transparent 18% 58%, rgba(255,255,255,0.14) 63%, transparent 70%),
+    repeating-radial-gradient(circle, #111 0 1px, #1b1b1b 1px 2.4px, #0c0c0c 2.4px 3px),
+    #0b0b0b;
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.marquee-track { animation: marquee 32s linear infinite; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  .intro-line, .intro-fade, .intro-nav, .scene-in { animation: none; opacity: 1; transform: none; }
+}

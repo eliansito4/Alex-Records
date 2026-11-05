@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+.env*
+*.tsbuildinfo
+next-env.d.ts
+
+# Claude Code: ajustes locales de cada máquina
+.claude/settings.local.json
+
+# Sistema
+.DS_Store
+Thumbs.db
