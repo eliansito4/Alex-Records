@@ -36,7 +36,7 @@ Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · React Three Fiber 9 + d
 - No hacer commits salvo que el usuario lo pida: él revisa los cambios y decide.
 
 ## Flujo de Git (obligatorio)
-Repositorio: https://github.com/eliansito4/Alex-Records (privado).
+Repositorio: https://github.com/eliansito4/Alex-Records (**público**). `main` está protegida en GitHub: no se puede borrar ni hacer push forzado.
 
 - **Nunca se trabaja directamente en `main`.** `main` solo recibe trabajo ya terminado y revisado.
 - Antes de tocar código, crear una rama desde `main` actualizado:
@@ -61,3 +61,12 @@ Repositorio: https://github.com/eliansito4/Alex-Records (privado).
   git branch -d tipo/descripcion-corta
   ```
 - Si Claude detecta que está en `main` al empezar una tarea, debe crear la rama primero.
+
+## Secretos y `.gitignore` (el repo es público)
+Todo lo que se sube queda visible para cualquiera, y en el historial de git aunque luego se borre.
+- **Nunca subir** `.env`, `.env.local`, claves de API, tokens ni contraseñas. Los secretos van en `.env.local`, que ya está en `.gitignore` (`.env*`).
+- Por cada variable nueva, añadir su nombre (sin valor) a `.env.example`, que sí se sube.
+- Solo las variables `NEXT_PUBLIC_*` llegan al navegador: **nunca** poner un secreto con ese prefijo.
+- Antes de cada commit, revisar `git status` y `git diff --cached` buscando `.env*` o claves (`sk_`, `pk_live`, `service_role`, `secret`, `token`, `password`). Claude debe avisar si aparece algo.
+- Al crear archivos nuevos de configuración o credenciales, comprobar que `.gitignore` los cubre.
+- Si se sube un secreto por error: **rotarlo (generar uno nuevo) de inmediato**; borrarlo del repo no basta.
