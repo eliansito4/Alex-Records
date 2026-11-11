@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Instrument_Serif, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import SiteShell from "@/components/SiteShell";
 import "./globals.css";
 
 // next/font descarga las fuentes en la compilación y las sirve desde el propio sitio:
@@ -17,7 +18,7 @@ const interTight = Inter_Tight({ weight: ["400", "500"], subsets: ["latin"], var
 const jetbrains = JetBrains_Mono({ weight: "400", subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Alex Records — Acetatos africanos",
+  title: { default: "Alex Records — Acetatos africanos", template: "%s — Alex Records" },
   description: "Management e importación de acetatos y primeras prensas de música africana.",
 };
 
@@ -28,7 +29,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${anton.variable} ${instrument.variable} ${interTight.variable} ${jetbrains.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SiteShell>{children}</SiteShell>
+      </body>
     </html>
   );
 }
