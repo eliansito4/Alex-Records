@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Products from "@/components/Products";
+import { Suspense } from "react";
+import ShopView from "@/components/shop/ShopView";
 import NextPage from "@/components/NextPage";
 
 export const metadata: Metadata = {
@@ -7,11 +8,14 @@ export const metadata: Metadata = {
   description: "Acetatos, test pressings y primeras prensas de música africana. Cada pieza es única.",
 };
 
-// Por ahora muestra el catálogo actual; el módulo 3 lo convierte en la tienda completa.
+// Los filtros viven en la URL (?formato=LP&orden=precio-asc…); Suspense es necesario
+// para leerlos en una página que Next genera de forma estática.
 export default function TiendaPage() {
   return (
     <>
-      <Products />
+      <Suspense fallback={<div className="textile min-h-screen" />}>
+        <ShopView />
+      </Suspense>
       <NextPage href="/management" label="Management" light />
     </>
   );
