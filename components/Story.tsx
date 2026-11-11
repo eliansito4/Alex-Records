@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { chapters } from "@/data/records";
+import { chapters } from "@/data/story";
 
 // Narración por scroll: sección fijada con capítulos en desplazamiento horizontal
 // y un disco que gira y se revela a medida que avanzas.
