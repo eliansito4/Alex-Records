@@ -2,7 +2,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PAGE_SIZES, SORTS, activeCount, parseState, runQuery, toQuery, type FacetKey, type ShopState, type SortId } from "@/lib/shop";
-import { getLenis } from "../SmoothScroll";
+import { getLenis } from "@/lib/lenis-instance";
 import Filters from "./Filters";
 import ResultRow from "./ResultRow";
 

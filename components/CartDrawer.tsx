@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useCart } from "@/lib/cart";
 import { CurrencySwitch, Price } from "./Price";
 import DiscImage from "./DiscImage";
-import { getLenis } from "./SmoothScroll";
+import { getLenis } from "@/lib/lenis-instance";
 
 // Carrito lateral (vista rápida). El detalle completo está en /carrito.
 export default function CartDrawer() {

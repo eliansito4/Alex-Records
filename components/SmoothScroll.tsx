@@ -4,10 +4,9 @@ import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { getLenis, setLenis } from "@/lib/lenis-instance";
 
-// Instancia compartida (por ejemplo, el menú móvil la detiene mientras está abierto)
-let instance: Lenis | null = null;
-export const getLenis = () => instance;
+// La instancia se comparte vía lib/lenis-instance (el menú, el carrito y la tienda la pausan)
 
 // Scroll suave con Lenis, conducido por el ticker de GSAP para que
 // ScrollTrigger y Lenis compartan el mismo frame (sin desfases ni tirones).
@@ -27,7 +26,7 @@ export default function SmoothScroll() {
       // En táctil se deja el scroll nativo (más fluido y sin conflictos con el pin)
       syncTouch: false,
     });
-    instance = lenis;
+    setLenis(lenis);
 
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => lenis.raf(time * 1000);
@@ -37,13 +36,13 @@ export default function SmoothScroll() {
     return () => {
       gsap.ticker.remove(tick);
       lenis.destroy();
-      instance = null;
+      setLenis(null);
     };
   }, []);
 
   // Al cambiar de página: arriba del todo al instante y recalcular los ScrollTrigger
   useEffect(() => {
-    instance?.scrollTo(0, { immediate: true, force: true });
+    getLenis()?.scrollTo(0, { immediate: true, force: true });
     const id = requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => cancelAnimationFrame(id);
   }, [pathname]);
