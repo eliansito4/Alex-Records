@@ -115,15 +115,16 @@ function Card({ r, i }: { r: Record; i: number }) {
   );
 }
 
+// Catálogo de la tienda. La versión completa (filtros, búsqueda, paginación) llega en el módulo 3.
 export default function Products() {
   return (
-    <section id="catalogo" className="textile relative px-5 py-28 md:px-10 md:py-40">
+    <section className="textile relative px-5 pb-28 pt-36 md:px-10 md:pb-40 md:pt-48">
       <div className="mb-16 flex flex-col justify-between gap-6 md:mb-24 md:flex-row md:items-end">
-        <h2 className="font-display text-[17vw] uppercase leading-[0.82] tracking-tightest md:text-[10vw]">
-          Piezas
+        <h1 className="font-display text-[17vw] uppercase leading-[0.82] tracking-tightest md:text-[10vw]">
+          Tienda
           <br />
-          <span className="font-serif-i normal-case tracking-normal">únicas</span>
-        </h2>
+          <span className="font-serif-i normal-case tracking-normal">acetatos únicos</span>
+        </h1>
         <p className="max-w-xs text-sm leading-relaxed text-bone/70">
           Cada acetato existe una sola vez. Al añadirlo, queda reservado 30 minutos para ti con certificado de procedencia incluido.
         </p>

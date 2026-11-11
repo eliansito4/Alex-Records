@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -86,14 +87,14 @@ export default function Hero() {
             Lagos · Accra · Addis · Bamako
           </span>
           <Magnetic>
-            <a
-              href="#catalogo"
+            <Link
+              href="/tienda"
               data-cursor="abrir"
               className="group relative inline-flex overflow-hidden rounded-full bg-bone px-7 py-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ink"
             >
-              <span className="relative z-10 transition-colors duration-500 group-hover:text-bone">Explorar catálogo</span>
+              <span className="relative z-10 transition-colors duration-500 group-hover:text-bone">Ir a la tienda</span>
               <span className="absolute inset-0 translate-y-full rounded-full bg-ink transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-y-0" />
-            </a>
+            </Link>
           </Magnetic>
         </div>
       </div>
