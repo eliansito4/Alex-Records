@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { pages } from "@/lib/nav";
-import { getLenis } from "./SmoothScroll";
+import { getLenis } from "@/lib/lenis-instance";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 

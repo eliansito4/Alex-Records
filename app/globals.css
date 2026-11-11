@@ -97,6 +97,11 @@ html.lenis, html.lenis body { height: auto; }
   -webkit-text-stroke: 1.5px var(--ink);
 }
 
+/* Fundido al cambiar de página (ver app/template.tsx). Solo opacidad: no crea un
+   bloque contenedor para position: fixed, así el pin de la historia sigue funcionando. */
+.page-in { animation: page-in 0.4s ease-out both; }
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
+
 /* Disco CSS para las vitrinas: surcos + reflejo cónico */
 .vinyl {
   border-radius: 9999px;
@@ -112,5 +117,5 @@ html.lenis, html.lenis body { height: auto; }
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
-  .intro-line, .intro-fade, .intro-nav, .scene-in { animation: none; opacity: 1; transform: none; }
+  .intro-line, .intro-fade, .intro-nav, .scene-in, .page-in { animation: none; opacity: 1; transform: none; }
 }

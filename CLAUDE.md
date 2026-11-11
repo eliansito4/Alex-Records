@@ -11,10 +11,13 @@ Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · React Three Fiber 9 + d
 - `npm run build` → verificar que compila
 
 ## Estado actual
-- Compila sin errores (`npm run build`) y funciona en `npm run dev`. Ya está optimizado: Lenis + ScrollTrigger, partículas en shader, dpr adaptativo, fuentes con `next/font`, entrada del titular en CSS.
-- Existe una versión de referencia en un solo HTML (three.js + GSAP por CDN) que ya funciona y se ve bien en móvil: `preview/alex-records-preview.html`. Si hay dudas de cómo debe verse o comportarse algo, esa es la referencia.
-- Catálogo, artistas y precios en `data/records.ts` son **ficticios** (placeholder).
-- El botón "Finalizar compra" y el formulario de la lista privada no están conectados a nada.
+- Compila sin errores (`npm run build`) y funciona en `npm run dev`. Optimizado: Lenis + ScrollTrigger, partículas en shader, dpr adaptativo, fuentes con `next/font`, entrada del titular en CSS, tarjetas sin animaciones.
+- Sitio dividido en páginas: `/` (inicio con el disco 3D), `/historia`, `/tienda`, `/tienda/[id]` (ficha), `/carrito`, `/management`, `/contacto`.
+- La tienda es un listado tipo mercado de discos: filtros con contadores, búsqueda, orden y paginación, todo en la URL.
+- Precios en **EUR**; conversión aproximada a **COP** con la tasa de `/api/fx` (caché 12 h, respaldo en `lib/currency-config.ts`). Se cobra en EUR.
+- Catálogo (`data/catalog.ts`), artistas y precios son **ficticios**. Fotos de stock de Unsplash revisadas sin marcas reales (`data/photos.ts`); se sustituyen por fotos propias en el campo `image`.
+- **Pendiente:** "Finalizar compra" desactivado (sin pasarela de pago); el formulario de la lista privada no envía nada; la "reserva de 30 minutos" que menciona el texto no existe todavía (necesita servidor y base de datos).
+- Referencia visual original en un solo HTML: `preview/alex-records-preview.html`.
 
 ## Diseño
 - Paleta solo blanco hueso (`bone` #f4f1ea) y negro tinta (`ink` #0a0a0a). Nada de colores de acento.
@@ -23,17 +26,22 @@ Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · React Three Fiber 9 + d
 - Todo debe funcionar bien en móvil: sin cursor personalizado ni efectos de hover en táctil; el scroll horizontal de la historia solo en escritorio.
 
 ## Mapa de archivos
-- `components/VinylScene.tsx` — escena 3D del héroe (disco, vapor, especias, luces). Texturas generadas en canvas, sin assets externos.
-- `components/Hero.tsx` — titular, carga diferida de la escena, ScrollTrigger del héroe.
+- `app/layout.tsx` + `components/SiteShell.tsx` — lo común a todas las páginas: moneda, carrito, Lenis, cursor, menú, pie, carrito lateral.
+- `app/template.tsx` — fundido al cambiar de página (no en la primera carga).
+- `components/VinylScene.tsx` — escena 3D del héroe (disco, vapor, especias, luces). Texturas en canvas, sin assets externos.
+- `components/Hero.tsx` — titular, carga diferida de la escena, ScrollTrigger del héroe. Solo en `/`.
 - `components/Story.tsx` — narración por scroll (pin + horizontal en escritorio).
-- `components/Products.tsx` — vitrina con inclinación 3D, disco que sale de la funda, reflejos.
-- `components/Management.tsx`, `Footer.tsx`, `CartDrawer.tsx`, `Nav.tsx`, `Cursor.tsx`, `Magnetic.tsx`.
-- `lib/cart.tsx` — contexto del carrito (cada acetato es pieza única, no se duplica).
-- `lib/scroll.ts` — estado compartido entre GSAP y la escena 3D sin re-renders.
+- `components/shop/` — tienda: `ShopView` (listado), `Filters`, `ResultRow`, `AddToCart`, `CartView` (página del carrito).
+- `components/Price.tsx` — precio en la moneda elegida y selector EUR/COP. `components/DiscImage.tsx` — foto del disco optimizada.
+- `components/Nav.tsx` (menú + menú móvil), `Footer.tsx`, `CartDrawer.tsx`, `Cursor.tsx`, `Magnetic.tsx`, `Management.tsx`, `ContactSection.tsx`.
+- `data/catalog.ts` (discos y escala de estados), `data/photos.ts`, `data/story.ts`.
+- `lib/shop.ts` — filtros, búsqueda, orden y paginación (funciones puras, estado en la URL).
+- `lib/cart.tsx` — carrito (pieza única, se guarda en el navegador por id). `lib/currency.tsx` — moneda y tasa.
+- `lib/nav.ts` — lista de páginas. `lib/lenis-instance.ts` — acceso a Lenis sin cargar GSAP. `lib/scroll.ts` — estado GSAP ↔ escena 3D.
 
 ## Forma de trabajar
 - Editar el código directamente en los archivos.
-- No hacer commits salvo que el usuario lo pida: él revisa los cambios y decide.
+- Trabajo por módulos, una rama por módulo. Claude hace los commits en la rama y, con el visto bueno del usuario, fusiona en `main` y hace push.
 
 ## Flujo de Git (obligatorio)
 Repositorio: https://github.com/eliansito4/Alex-Records (**público**). `main` está protegida en GitHub: no se puede borrar ni hacer push forzado.
