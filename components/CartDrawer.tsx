@@ -1,11 +1,36 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { useCart } from "@/lib/cart";
 import { CurrencySwitch, Price } from "./Price";
 import DiscImage from "./DiscImage";
+import { getLenis } from "./SmoothScroll";
 
+// Carrito lateral (vista rápida). El detalle completo está en /carrito.
 export default function CartDrawer() {
   const { items, open, setOpen, remove, subtotal, shipping, total } = useCart();
+  const pathname = usePathname();
+
+  // Se cierra al cambiar de página
+  useEffect(() => setOpen(false), [pathname, setOpen]);
+
+  // La página de fondo no se desplaza mientras el carrito está abierto
+  useEffect(() => {
+    if (!open) return;
+    const lenis = getLenis();
+    lenis?.stop();
+    document.documentElement.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      lenis?.start();
+      document.documentElement.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, setOpen]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -19,7 +44,10 @@ export default function CartDrawer() {
             onClick={() => setOpen(false)}
           />
           <motion.aside
-            className="fixed right-0 top-0 z-[90] flex h-full w-full max-w-md flex-col bg-bone p-8 text-ink"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Carrito"
+            className="fixed right-0 top-0 z-[90] flex h-full w-full max-w-md flex-col bg-bone p-6 text-ink md:p-8"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -31,8 +59,15 @@ export default function CartDrawer() {
                 Cerrar ✕
               </button>
             </div>
-            <div className="mt-10 flex-1 space-y-5 overflow-y-auto">
-              {items.length === 0 && <p className="text-ink/60">Aún no has elegido ningún acetato.</p>}
+            <div className="mt-8 flex-1 space-y-5 overflow-y-auto overscroll-contain" data-lenis-prevent>
+              {items.length === 0 && (
+                <div>
+                  <p className="text-ink/60">Aún no has elegido ningún acetato.</p>
+                  <Link href="/tienda" className="mt-4 inline-block font-mono text-[11px] uppercase tracking-[0.2em] underline underline-offset-4">
+                    Ir a la tienda →
+                  </Link>
+                </div>
+              )}
               <AnimatePresence initial={false}>
                 {items.map((r) => (
                   <motion.div
@@ -43,11 +78,13 @@ export default function CartDrawer() {
                     exit={{ opacity: 0, x: -40 }}
                     className="flex items-center gap-4 border-b border-ink/15 pb-5"
                   >
-                    <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-ink">
+                    <Link href={`/tienda/${r.id}`} className="relative h-16 w-16 shrink-0 overflow-hidden bg-ink" tabIndex={-1} aria-hidden>
                       <DiscImage disc={r} sizes="64px" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-display text-xl uppercase leading-none">{r.title}</p>
+                    </Link>
+                    <div className="min-w-0 flex-1">
+                      <Link href={`/tienda/${r.id}`} className="font-display text-xl uppercase leading-none hover:underline">
+                        {r.title}
+                      </Link>
                       <p className="mt-1 text-xs text-ink/60">{r.artist}</p>
                       <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.15em] text-ink/40">
                         {r.formatDetail} · {r.catNo}
@@ -81,12 +118,18 @@ export default function CartDrawer() {
                 <span>Total</span>
                 <Price eur={total} />
               </div>
-              <button
-                disabled={!items.length}
-                className="mt-6 w-full rounded-full bg-ink py-5 font-mono text-[11px] uppercase tracking-[0.25em] text-bone transition-opacity disabled:opacity-30"
-              >
-                Finalizar compra
-              </button>
+              {items.length > 0 ? (
+                <Link
+                  href="/carrito"
+                  className="mt-6 block w-full rounded-full bg-ink py-5 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-bone"
+                >
+                  Ver carrito y pagar
+                </Link>
+              ) : (
+                <span className="mt-6 block w-full rounded-full bg-ink py-5 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-bone opacity-30">
+                  Ver carrito y pagar
+                </span>
+              )}
             </div>
           </motion.aside>
         </>

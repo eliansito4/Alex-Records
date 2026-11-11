@@ -45,7 +45,9 @@ function CursorDot() {
   return (
     <motion.div
       aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-[70] flex items-center justify-center rounded-full bg-bone font-mono text-[10px] uppercase tracking-widest text-ink mix-blend-difference"
+      // z-[100]: por encima de todo (carrito z-90, menús y paneles); con mix-blend-difference
+      // se ve claro sobre fondos oscuros y oscuro sobre el blanco hueso del carrito
+      className="pointer-events-none fixed left-0 top-0 z-[100] flex items-center justify-center rounded-full bg-bone font-mono text-[10px] uppercase tracking-widest text-ink mix-blend-difference"
       style={{ x: sx, y: sy, translateX: "-50%", translateY: "-50%" }}
       animate={{ width: hover !== null ? 88 : 12, height: hover !== null ? 88 : 12 }}
       transition={grow}

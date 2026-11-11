@@ -7,7 +7,10 @@ type CartCtx = {
   open: boolean;
   add: (r: Disc) => void;
   remove: (id: string) => void;
+  clear: () => void;
   setOpen: (v: boolean) => void;
+  /** false hasta leer el carrito guardado (evita mostrar "vacío" un instante) */
+  ready: boolean;
   /** Suma de precios, en euros */
   subtotal: number;
   /** Envío del pedido, en euros: todo viaja en un solo paquete, se cobra el envío más alto */
@@ -35,6 +38,7 @@ function loadIds(): string[] {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Disc[]>([]);
   const [open, setOpen] = useState(false);
+  const [ready, setReady] = useState(false);
   const loaded = useRef(false);
 
   // Recuperar el carrito después de hidratar (en el servidor no existe localStorage)
@@ -42,6 +46,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const ids = new Set(loadIds());
     setItems(discs.filter((r) => ids.has(r.id)));
     loaded.current = true;
+    setReady(true);
   }, []);
 
   useEffect(() => {
@@ -64,11 +69,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // Los acetatos son piezas únicas: no se duplican en el carrito
       add: (r) => setItems((prev) => (prev.some((p) => p.id === r.id) ? prev : [...prev, r])),
       remove: (id) => setItems((prev) => prev.filter((p) => p.id !== id)),
+      clear: () => setItems([]),
+      ready,
       subtotal,
       shipping,
       total: subtotal + shipping,
     }),
-    [items, open, subtotal, shipping]
+    [items, open, ready, subtotal, shipping]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
