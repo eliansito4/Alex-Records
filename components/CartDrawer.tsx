@@ -1,9 +1,11 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "@/lib/cart";
+import { CurrencySwitch, Price } from "./Price";
+import DiscImage from "./DiscImage";
 
 export default function CartDrawer() {
-  const { items, open, setOpen, remove, total } = useCart();
+  const { items, open, setOpen, remove, subtotal, shipping, total } = useCart();
   return (
     <AnimatePresence>
       {open && (
@@ -41,13 +43,18 @@ export default function CartDrawer() {
                     exit={{ opacity: 0, x: -40 }}
                     className="flex items-center gap-4 border-b border-ink/15 pb-5"
                   >
-                    <div className="vinyl h-16 w-16 shrink-0 animate-spin [animation-duration:6s]" />
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-ink">
+                      <DiscImage disc={r} sizes="64px" />
+                    </div>
                     <div className="flex-1">
                       <p className="font-display text-xl uppercase leading-none">{r.title}</p>
                       <p className="mt-1 text-xs text-ink/60">{r.artist}</p>
+                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.15em] text-ink/40">
+                        {r.formatDetail} · {r.catNo}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-display text-lg">US${r.price}</p>
+                      <Price eur={r.price} className="block font-display text-lg" />
                       <button onClick={() => remove(r.id)} className="font-mono text-[10px] uppercase tracking-widest text-ink/50 hover:text-ink">
                         Quitar
                       </button>
@@ -57,9 +64,22 @@ export default function CartDrawer() {
               </AnimatePresence>
             </div>
             <div className="border-t border-ink pt-6">
+              <CurrencySwitch tone="light" className="mb-6" />
+              {items.length > 0 && (
+                <dl className="mb-3 space-y-1 font-mono text-[11px] uppercase tracking-[0.15em] text-ink/60">
+                  <div className="flex justify-between">
+                    <dt>Subtotal</dt>
+                    <dd><Price eur={subtotal} /></dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt>Envío (un solo paquete)</dt>
+                    <dd><Price eur={shipping} /></dd>
+                  </div>
+                </dl>
+              )}
               <div className="flex justify-between font-display text-3xl">
                 <span>Total</span>
-                <span>US${total}</span>
+                <Price eur={total} />
               </div>
               <button
                 disabled={!items.length}

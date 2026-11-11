@@ -1,13 +1,18 @@
 "use client";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { records, type Record } from "@/data/records";
+import { discs, type Disc } from "@/data/catalog";
 
 type CartCtx = {
-  items: Record[];
+  items: Disc[];
   open: boolean;
-  add: (r: Record) => void;
+  add: (r: Disc) => void;
   remove: (id: string) => void;
   setOpen: (v: boolean) => void;
+  /** Suma de precios, en euros */
+  subtotal: number;
+  /** Envío del pedido, en euros: todo viaja en un solo paquete, se cobra el envío más alto */
+  shipping: number;
+  /** subtotal + envío, en euros */
   total: number;
 };
 
@@ -28,14 +33,14 @@ function loadIds(): string[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<Record[]>([]);
+  const [items, setItems] = useState<Disc[]>([]);
   const [open, setOpen] = useState(false);
   const loaded = useRef(false);
 
   // Recuperar el carrito después de hidratar (en el servidor no existe localStorage)
   useEffect(() => {
     const ids = new Set(loadIds());
-    setItems(records.filter((r) => ids.has(r.id)));
+    setItems(discs.filter((r) => ids.has(r.id)));
     loaded.current = true;
   }, []);
 
@@ -48,6 +53,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items]);
 
+  const subtotal = items.reduce((s, r) => s + r.price, 0);
+  const shipping = items.reduce((m, r) => Math.max(m, r.shipping), 0);
+
   const value = useMemo<CartCtx>(
     () => ({
       items,
@@ -56,9 +64,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // Los acetatos son piezas únicas: no se duplican en el carrito
       add: (r) => setItems((prev) => (prev.some((p) => p.id === r.id) ? prev : [...prev, r])),
       remove: (id) => setItems((prev) => prev.filter((p) => p.id !== id)),
-      total: items.reduce((s, r) => s + r.price, 0),
+      subtotal,
+      shipping,
+      total: subtotal + shipping,
     }),
-    [items, open]
+    [items, open, subtotal, shipping]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
