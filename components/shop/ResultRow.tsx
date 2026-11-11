@@ -1,23 +1,23 @@
 "use client";
+import Link from "next/link";
 import { GRADE_INFO, type Disc, type SleeveGrade } from "@/data/catalog";
-import { useCart } from "@/lib/cart";
 import DiscImage from "../DiscImage";
 import { Price } from "../Price";
+import AddToCart from "./AddToCart";
 
 const sleeveText = (s: SleeveGrade) => (s in GRADE_INFO ? GRADE_INFO[s as keyof typeof GRADE_INFO].label : s);
 
-// Fila del listado: foto · datos del disco · precio y botón.
+// Fila del listado: foto · datos del disco · precio y botón. Foto y título llevan a la ficha.
 export default function ResultRow({ d, priority = false }: { d: Disc; priority?: boolean }) {
-  const { add, items, setOpen } = useCart();
-  const inCart = items.some((p) => p.id === d.id);
+  const href = `/tienda/${d.id}`;
 
   return (
     <li className="grid grid-cols-[88px_1fr] gap-x-4 gap-y-4 border-b border-bone/15 py-6 sm:grid-cols-[112px_1fr] md:grid-cols-[128px_1fr_190px] md:gap-x-6">
       {/* Foto */}
       <div>
-        <div className="relative aspect-square overflow-hidden bg-ink">
+        <Link href={href} tabIndex={-1} aria-hidden className="relative block aspect-square overflow-hidden bg-ink" data-cursor="ver">
           <DiscImage disc={d} sizes="(min-width: 768px) 128px, 112px" priority={priority} />
-        </div>
+        </Link>
         <p className="mt-2 hidden font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-bone/45 sm:block">
           Pieza única
           <br />
@@ -28,7 +28,10 @@ export default function ResultRow({ d, priority = false }: { d: Disc; priority?:
       {/* Datos */}
       <div className="min-w-0">
         <h2 className="text-base font-medium leading-snug text-bone md:text-lg">
-          {d.artist} — {d.title} <span className="text-bone/55">({d.formatDetail})</span>
+          <Link href={href} className="underline-offset-4 hover:underline" data-cursor="ver">
+            {d.artist} — {d.title}
+          </Link>{" "}
+          <span className="text-bone/55">({d.formatDetail})</span>
         </h2>
         <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[13px] leading-relaxed">
           <dt className="text-bone/50">Sello:</dt>
@@ -50,6 +53,13 @@ export default function ResultRow({ d, priority = false }: { d: Disc; priority?:
           </dd>
         </dl>
         {d.notes && <p className="mt-2 max-w-xl text-[13px] italic leading-relaxed text-bone/65">{d.notes}</p>}
+        <Link
+          href={href}
+          className="mt-2 inline-block text-[13px] text-bone/70 underline underline-offset-4 hover:text-bone"
+          data-cursor="ver"
+        >
+          Ver ficha del disco
+        </Link>
       </div>
 
       {/* Precio y compra */}
@@ -60,15 +70,12 @@ export default function ResultRow({ d, priority = false }: { d: Disc; priority?:
             + <Price eur={d.shipping} /> envío
           </p>
         </div>
-        <button
-          onClick={() => (inCart ? setOpen(true) : add(d))}
-          data-cursor={inCart ? "ver" : "+"}
-          className={`shrink-0 rounded-full border px-5 py-3 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-200 md:mt-3 ${
-            inCart ? "border-bone bg-transparent text-bone" : "border-bone bg-bone text-ink hover:bg-transparent hover:text-bone"
-          }`}
-        >
-          {inCart ? "En el carrito ✓" : "Añadir al carrito"}
-        </button>
+        <div className="flex flex-col items-end gap-2 md:mt-3">
+          <AddToCart disc={d} />
+          <Link href={href} className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-bone/70 hover:text-bone md:block" data-cursor="ver">
+            Detalles →
+          </Link>
+        </div>
       </div>
     </li>
   );

@@ -143,6 +143,15 @@ const sorters: Record<SortId, (a: Disc, b: Disc) => number> = {
   estado: (a, b) => GRADES.indexOf(a.media) - GRADES.indexOf(b.media) || b.price - a.price,
 };
 
+// Discos relacionados para la ficha: primero mismo género, luego mismo país
+export function relatedDiscs(d: Disc, n = 4): Disc[] {
+  const score = (o: Disc) => (o.genre === d.genre ? 2 : 0) + (o.country === d.country ? 1 : 0);
+  return discs
+    .filter((o) => o.id !== d.id && score(o) > 0)
+    .sort((a, b) => score(b) - score(a) || b.addedAt.localeCompare(a.addedAt))
+    .slice(0, n);
+}
+
 export function runQuery(s: ShopState) {
   const results = filterDiscs(s).sort(sorters[s.sort]);
   const total = results.length;
